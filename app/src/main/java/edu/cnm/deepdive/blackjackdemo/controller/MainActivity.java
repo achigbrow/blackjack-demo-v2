@@ -6,26 +6,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import edu.cnm.deepdive.blackjackdemo.R;
 import edu.cnm.deepdive.blackjackdemo.model.Card;
-import edu.cnm.deepdive.blackjackdemo.model.Deck;
-import edu.cnm.deepdive.blackjackdemo.model.Hand;
-import edu.cnm.deepdive.blackjackdemo.service.DeckOfCardsService.CreateDeckTask;
-import edu.cnm.deepdive.blackjackdemo.service.DeckOfCardsService.DrawCardsTask;
-import edu.cnm.deepdive.blackjackdemo.service.DeckOfCardsService.ShuffleDeckTask;
 import edu.cnm.deepdive.blackjackdemo.view.HandAdapter;
+import edu.cnm.deepdive.blackjackdemo.viewmodel.MainViewModel;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-  private static final int DECKS_IN_SHOE = 6;
-
-  private Deck deck;
-  private Hand hand;
   private RecyclerView handView;
-  private HandAdapter handAdapter;
+  private MainViewModel model;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +28,13 @@ public class MainActivity extends AppCompatActivity {
     setupToolbar();
     setupFloatingActionButton();
     setupRecyclerView();
-    setupDeck();
+    setupViewModel();
+  }
+
+  @Override
+  protected void onStop() {
+    super.onStop();
+    model.disposeAllPending();
   }
 
   @Override
@@ -48,10 +48,10 @@ public class MainActivity extends AppCompatActivity {
     boolean handled = true;
     switch (item.getItemId()) {
       case R.id.shuffle_deck:
-        shuffleDeck();
+        model.shuffle();
         break;
       case R.id.deal_hand:
-        setupHand();
+        model.dealHand();
         break;
       default:
         handled = super.onOptionsItemSelected(item);
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void setupFloatingActionButton() {
     FloatingActionButton fab = findViewById(R.id.fab);
-    fab.setOnClickListener((view) -> drawCards(1));
+    fab.setOnClickListener((view) -> model.draw(1));
   }
 
   private void setupRecyclerView() {
@@ -78,38 +78,14 @@ public class MainActivity extends AppCompatActivity {
     handView.setLayoutManager(new LinearLayoutManager(this));
   }
 
-  private void setupDeck() {
-    new CreateDeckTask()
-        .setOnCompletionListener((deck) -> this.deck = deck)
-        .setOnSuccessListener((ignored) -> setupHand())
-        .execute(DECKS_IN_SHOE);
+  private void setupViewModel() {
+    model = ViewModelProviders.of(this).get(MainViewModel.class);
+    model.getCards().observe(this, this::updateCards);
   }
 
-  private void shuffleDeck() {
-    new ShuffleDeckTask()
-        .setOnSuccessListener(
-            (ignored) -> setupHand()
-        )
-        .execute(deck);
-  }
-
-  private void setupHand() {
-    hand = new Hand();
-    handAdapter = new HandAdapter(MainActivity.this, hand.getCards());
+  private void updateCards(List<Card> cards) {
+    HandAdapter handAdapter = new HandAdapter(this, cards);
     handView.setAdapter(handAdapter);
-    drawCards(2);
-  }
-
-  private void drawCards(int numCards) {
-    new DrawCardsTask(deck)
-        .setOnSuccessListener((draw) -> {
-          int startPosition = hand.getCards().size();
-          for (Card card : draw.getCards()) {
-            hand.addCard(card);
-          }
-          handAdapter.notifyItemRangeInserted(startPosition, draw.getCards().size());
-        })
-        .execute(numCards);
   }
 
 }
