@@ -4,6 +4,9 @@ import edu.cnm.deepdive.blackjackdemo.BuildConfig;
 import edu.cnm.deepdive.blackjackdemo.model.Deck;
 import edu.cnm.deepdive.blackjackdemo.model.Draw;
 import io.reactivex.Single;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import okhttp3.logging.HttpLoggingInterceptor.Level;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -31,8 +34,14 @@ public interface DeckOfCardsService {
     private static final DeckOfCardsService INSTANCE;
 
     static {
+      HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+      interceptor.setLevel(Level.BODY);
+      OkHttpClient client = new OkHttpClient.Builder()
+          .addInterceptor(interceptor)
+          .build();
       Retrofit retrofit = new Retrofit.Builder()
           .baseUrl(BuildConfig.BASE_URL)
+          .client(client)
           .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
           .addConverterFactory(GsonConverterFactory.create())
           .build();

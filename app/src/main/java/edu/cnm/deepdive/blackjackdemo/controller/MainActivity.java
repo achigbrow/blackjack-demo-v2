@@ -32,12 +32,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onStop() {
-    super.onStop();
-    model.disposeAllPending();
-  }
-
-  @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.options, menu);
     return true;
@@ -51,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         model.shuffle();
         break;
       case R.id.deal_hand:
-        model.dealHand();
+        model.deal();
         break;
       default:
         handled = super.onOptionsItemSelected(item);
