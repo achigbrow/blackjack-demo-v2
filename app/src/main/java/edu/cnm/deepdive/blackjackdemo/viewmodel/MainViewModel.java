@@ -12,6 +12,19 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+import edu.cnm.deepdive.blackjackdemo.model.Card;
+import edu.cnm.deepdive.blackjackdemo.model.Deck;
+import edu.cnm.deepdive.blackjackdemo.model.Draw;
+import edu.cnm.deepdive.blackjackdemo.model.Hand;
+import edu.cnm.deepdive.blackjackdemo.service.DeckOfCardsService;
+import io.reactivex.Scheduler;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import java.util.List;
+
 public class MainViewModel extends ViewModel {
 
   private static final int DECKS_IN_SHOE = 6;
@@ -21,7 +34,7 @@ public class MainViewModel extends ViewModel {
   private MutableLiveData<Hand> hand = new MutableLiveData<>();
   private MutableLiveData<List<Card>> cards = new MutableLiveData<>();
 
-  public MainViewModel() {
+  {
     createDeck();
   }
 
@@ -33,7 +46,7 @@ public class MainViewModel extends ViewModel {
     return hand;
   }
 
-  public LiveData<List<Card>> getCards() {
+  public MutableLiveData<List<Card>> getCards() {
     return cards;
   }
 
@@ -42,6 +55,7 @@ public class MainViewModel extends ViewModel {
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe((d) -> deal()); // FIXME Add to disposable container.
+
   }
 
   public void deal() {
@@ -50,10 +64,10 @@ public class MainViewModel extends ViewModel {
   }
 
   public void draw(int numCards) {
-    DeckOfCardsService.getInstance().draw(deck.getValue().getId(), numCards)
+    DeckOfCardsService.getInstance().draw(deck.getValue().getId(), numCards) // gets the deck object from the thingies.
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(this::addToHand); // FIXME Add to disposable container.
+        .subscribe(this::addToHand);
   }
 
   private void createDeck() {
@@ -66,12 +80,15 @@ public class MainViewModel extends ViewModel {
         }); // FIXME Add to disposable container.
   }
 
-  private void addToHand(Draw draw) {
-    Hand hand = this.hand.getValue();
-    for (Card card : draw.getCards()) {
-      hand.addCard(card);
+
+  private void addToHand(Draw draw) { //Draw is what we get from the developer defined data service when we ask it to return the draw from a particular deck id
+    Hand hand = this.hand.getValue(); //gethand returns live data, getvalue returns the i don't know ( I do, but not for here, no idea what kind of thang this dude be talking about
+    for (Card card: draw.getCards()) { //iterates over the cards, gets them and adds them to hand, and updates Hand hand
+      hand.addCard(card); // just adds to a list, does not add to our live data, our observed data
     }
-    cards.setValue(hand.getCards());
+    cards.setValue(hand.getCards()); //take the list that is currently in this hand and post it to our cards mutable data.
+
+    //in fact hand.getCards is going to return the same list object but with additional items in it.
   }
 
 }

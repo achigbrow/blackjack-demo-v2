@@ -25,7 +25,24 @@ public class Hand {
 
   public void addCard(Card card) {
     cards.add(card);
-    // TODO Update score, soft, busted, blackjack, status.
+    if (!soft
+        && (card.getRank() == Rank.ACE)
+        && (score <= 21 - Rank.ACE.getSoftValue())) {
+      score += Rank.ACE.getSoftValue();
+      soft = true;
+    } else if (soft
+        && score + card.getRank().getHardValue() > 21 ) {
+      soft = false;
+      score -= Rank.ACE.getSoftValue() - Rank.ACE.getHardValue();
+      score += card.getHardValue();
+    } else {
+      score += card.getHardValue();
+    }
+    if (score> 21) {
+      busted = true;
+    } else if (score == 21 && cards.size() == 2){
+      blackjack = true;
+    }
   }
 
   public List<Card> getCards() {
@@ -54,3 +71,4 @@ public class Hand {
   }
 
 }
+
