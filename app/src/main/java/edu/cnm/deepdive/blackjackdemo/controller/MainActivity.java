@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
@@ -13,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import edu.cnm.deepdive.blackjackdemo.R;
 import edu.cnm.deepdive.blackjackdemo.model.Card;
-import edu.cnm.deepdive.blackjackdemo.model.Hand;
 import edu.cnm.deepdive.blackjackdemo.view.HandAdapter;
 import edu.cnm.deepdive.blackjackdemo.viewmodel.MainViewModel;
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
   private FloatingActionButton fab;
-  private RecyclerView handView; //da view
+  private RecyclerView handView;
   private MainViewModel model;
 
   @Override
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
   private void setupFloatingActionButton() {
     fab = findViewById(R.id.fab);
-    fab.setOnClickListener((view) -> model.draw(1));
+    fab.setOnClickListener((view) -> model.draw());
   }
 
   private void setupRecyclerView() {
@@ -78,16 +78,20 @@ public class MainActivity extends AppCompatActivity {
   private void setupViewModel() {
     model = ViewModelProviders.of(this).get(MainViewModel.class);
     model.getCards().observe(this, this::updateCards);
+    getLifecycle().addObserver(model);
   }
-
 
   private void updateCards(List<Card> cards) {
     HandAdapter handAdapter = new HandAdapter(this, cards);
     handView.setAdapter(handAdapter);
-    if (model.getHand().getValue().getScore() >= 21) {
+    int score = model.getHand().getValue().getScore();
+    TextView handValue = findViewById(R.id.hand_value);
+    handValue.setText(Integer.toString(score));
+    if (score >= 21) {
       fab.hide();
-    }else {
+    } else {
       fab.show();
     }
   }
+
 }

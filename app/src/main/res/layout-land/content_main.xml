@@ -14,14 +14,14 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    app:layout_constraintGuide_percent="0.5"/>
+    app:layout_constraintGuide_percent="0.6"/>
 
   <androidx.constraintlayout.widget.Guideline
     android:id="@+id/vertical_guideline"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    app:layout_constraintGuide_percent="0.6"/>
+    app:layout_constraintGuide_percent="0.5"/>
 
   <androidx.recyclerview.widget.RecyclerView
     android:id="@+id/hand_view"
@@ -40,12 +40,12 @@
     android:layout_height="0dp"
     android:includeFontPadding="false"
     app:autoSizeTextType="uniform"
-    app:autoSizeMinTextSize="@dimen/min_hand_count_size"
-    app:autoSizeMaxTextSize="@dimen/max_hand_count_size"
+    app:autoSizeMinTextSize="64sp"
+    app:autoSizeMaxTextSize="120sp"
     android:gravity="center"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintLeft_toRightOf="@id/vertical_guideline"
-    app:layout_constraintRight_toRightOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/horizontal_guideline"/>
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintRight_toLeftOf="@id/vertical_guideline"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/horizontal_guideline"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

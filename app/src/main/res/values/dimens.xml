@@ -4,4 +4,6 @@
   <dimen name="card_height">200dp</dimen>
   <dimen name="card_horizontal_spacing">20dp</dimen>
   <dimen name="card_vertical_spacing">-188dp</dimen>
+  <dimen name="min_hand_count_size">64sp</dimen>
+  <dimen name="max_hand_count_size">120sp</dimen>
 </resources>

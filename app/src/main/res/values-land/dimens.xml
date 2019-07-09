@@ -1,0 +1,9 @@
+<resources>
+  <dimen name="fab_margin">16dp</dimen>
+  <dimen name="card_list_padding">16dp</dimen>
+  <dimen name="card_height">150dp</dimen>
+  <dimen name="card_horizontal_spacing">15dp</dimen>
+  <dimen name="card_vertical_spacing">-138dp</dimen>
+  <dimen name="min_hand_count_size">64sp</dimen>
+  <dimen name="max_hand_count_size">96sp</dimen>
+</resources>
